@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account Blocked</title>
+
+<style>
+
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        font-family:Arial, sans-serif;
+    }
+
+    body{
+        height:100vh;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        background:#f4f6f9;
+        padding:20px;
+    }
+
+    .blocked-card{
+        width:420px;
+        background:white;
+        border-radius:14px;
+        padding:35px;
+        text-align:center;
+        box-shadow:0 5px 18px rgba(0,0,0,0.12);
+    }
+
+    .icon{
+        font-size:70px;
+        margin-bottom:20px;
+    }
+
+    h1{
+        color:#dc2626;
+        margin-bottom:15px;
+    }
+
+    p{
+        color:#555;
+        line-height:1.6;
+        margin-bottom:25px;
+    }
+
+    .support-btn{
+        display:inline-block;
+        text-decoration:none;
+        background:#2563eb;
+        color:white;
+        padding:12px 22px;
+        border-radius:8px;
+        transition:0.3s;
+        font-size:15px;
+    }
+
+    .support-btn:hover{
+        background:#1d4ed8;
+    }
+
+    .support-email{
+        margin-top:18px;
+        font-size:14px;
+        color:#666;
+    }
+
+</style>
+
+</head>
+<body>
+
+<div class="blocked-card">
+
+    <div class="icon">
+        🚫
+    </div>
+
+    <h1>Account Blocked</h1>
+
+    <p>
+        Your account has been blocked due to suspicious activity,
+        policy violations, or multiple failed verification attempts.
+        You currently cannot access platform features.
+    </p>
+
+    <a href="mailto:support@example.com" class="support-btn">
+        Contact Support Team
+    </a>
+
+    <div class="support-email">
+        support@example.com
+    </div>
+
+</div>
+
+</body>
+</html>

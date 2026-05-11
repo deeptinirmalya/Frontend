@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Verification | HireNest</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white shadow-lg rounded-xl p-8 max-w-md w-full text-center">
+
+        <!-- Loader -->
+        <div id="loader" class="flex justify-center mb-4">
+            <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+        </div>
+
+        <!-- Success Message -->
+        <h2 id="status" class="text-xl font-semibold text-green-600">
+            Verifying your email...
+        </h2>
+
+        <!-- Error Message -->
+        <p id="error-msg" class="hidden text-red-600 mt-4 font-medium"></p>
+
+    </div>
+
+    <script>
+
+        window.onload = async () => {
+
+            const urlParams = new URLSearchParams(window.location.search);
+
+            const token = urlParams.get('token');
+
+            const loader = document.getElementById('loader');
+
+            const status = document.getElementById('status');
+
+            const errorMsg = document.getElementById('error-msg');
+
+            // No token found
+            if (!token) {
+
+                loader.style.display = 'none';
+
+                status.className = "text-xl font-semibold text-red-600";
+
+                status.innerText = "No verification token found.";
+
+                return;
+            }
+
+            try {
+
+                const response = await fetch(
+                    `http://localhost:8000/api/v1/auth/verify-email?token=${encodeURIComponent(token)}`
+                );
+
+                const data = await response.json();
+
+                loader.style.display = 'none';
+
+                // SUCCESS
+                if (response.ok && data.success) {
+
+                    status.className = "text-xl font-semibold text-green-600";
+
+                    status.innerText =
+                        data.message || "Email verified successfully.";
+
+                    // Redirect after 3 seconds
+                    setTimeout(() => {
+
+                        window.location.href = "login.html";
+
+                    }, 3000);
+
+                }
+
+                // FAILED
+                else {
+
+                    status.style.display = 'none';
+
+                    errorMsg.classList.remove('hidden');
+
+                    errorMsg.innerText =
+                        data.message ||
+                        data.detail ||
+                        data.error ||
+                        "Verification failed.";
+
+                }
+
+            }
+
+            catch (err) {
+
+                loader.style.display = 'none';
+
+                status.style.display = 'none';
+
+                errorMsg.classList.remove('hidden');
+
+                errorMsg.innerText =
+                    "Network error. Unable to connect to server.";
+
+                console.error(err);
+
+            }
+
+        };
+
+    </script>
+
+</body>
+</html>

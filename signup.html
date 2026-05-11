@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - HireNest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #111827; }
+        ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-gray-900 flex items-center justify-center min-h-screen text-white p-4">
+
+    <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-green-500">HireNest</h1>
+            <p class="text-gray-400 mt-2">Join our professional recruitment platform.</p>
+        </div>
+
+        <!-- Social Signup -->
+        <div class="space-y-3">
+            <a href="http://localhost:8000/api/v1/auth/google/login?method=signup" 
+               class="flex items-center justify-center w-full bg-white text-gray-900 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-200 transition duration-300">
+                <img src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png" alt="Google" class="w-5 h-5 mr-3">
+                Sign up with Google
+            </a>
+
+            <a href="http://localhost:8000/api/v1/auth/github/login?method=signup" 
+               class="flex items-center justify-center w-full bg-gray-700 text-white font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-600 transition duration-300 border border-gray-600">
+                <i class="fab fa-github text-xl mr-3"></i>
+                Sign up with GitHub
+            </a>
+        </div>
+
+        <!-- Divider -->
+        <div class="relative my-8">
+            <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-gray-700"></span></div>
+            <div class="relative flex justify-center text-xs uppercase"><span class="bg-gray-800 px-2 text-gray-500">Or continue with email</span></div>
+        </div>
+
+        <!-- Manual Signup Form -->
+        <form id="signupForm" class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Full Name</label>
+                <input type="text" id="name" required placeholder="John Doe"
+                       class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Email Address</label>
+                <input type="email" id="email" required placeholder="name@company.com"
+                       class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-400 mb-1">Password</label>
+                <input type="password" id="password" required placeholder="••••••••"
+                       class="w-full bg-gray-900 border border-gray-700 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500 transition">
+            </div>
+
+            <button type="submit" id="submitBtn"
+                    class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition duration-300 transform active:scale-95">
+                Create Account
+            </button>
+        </form>
+
+        <!-- Message Box -->
+        <div id="messageBox" class="mt-4 p-3 rounded-lg text-sm text-center hidden"></div>
+
+        <div class="mt-8 text-center border-t border-gray-700 pt-6">
+            <p class="text-gray-400">Already have an account?</p>
+            <a href="login.html" class="text-green-500 hover:underline font-medium">Log in to your account</a>
+        </div>
+
+        <p class="text-[10px] text-gray-500 mt-6 text-center leading-relaxed">
+            By signing up, you agree to HireNest's <br>
+            <span class="underline cursor-pointer">Terms of Service</span> and <span class="underline cursor-pointer">Privacy Policy</span>.
+        </p>
+    </div>
+
+    <script>
+        const signupForm = document.getElementById('signupForm');
+        const messageBox = document.getElementById('messageBox');
+        const submitBtn = document.getElementById('submitBtn');
+
+        signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // UI Feedback
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Creating account...";
+            messageBox.classList.add('hidden');
+
+            const payload = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value
+            };
+
+            try {
+                const response = await fetch('http://localhost:8000/api/v1/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    messageBox.innerText = result.message;
+                    messageBox.className = "mt-4 p-3 rounded-lg text-sm text-center bg-green-900/30 text-green-400 border border-green-800";
+                    signupForm.reset();
+                } else {
+                    messageBox.innerText = result.detail || "Registration failed. Please try again.";
+                    messageBox.className = "mt-4 p-3 rounded-lg text-sm text-center bg-red-900/30 text-red-400 border border-red-800";
+                }
+            } catch (error) {
+                messageBox.innerText = "Network error. Please check if the server is running.";
+                messageBox.className = "mt-4 p-3 rounded-lg text-sm text-center bg-red-900/30 text-red-400 border border-red-800";
+            } finally {
+                messageBox.classList.remove('hidden');
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Create Account";
+            }
+        });
+    </script>
+</body>
+</html>

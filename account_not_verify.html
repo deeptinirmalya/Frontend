@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Verification</title>
+
+    <style>
+
+        :root {
+            --primary: #4f46e5;
+            --danger: #ef4444;
+            --bg: #f3f4f6;
+        }
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* Main Card */
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .icon {
+            font-size: 3rem;
+            color: var(--danger);
+            margin-bottom: 10px;
+        }
+
+        h2{
+            margin-bottom:10px;
+        }
+
+        p{
+            color:#555;
+            line-height:1.5;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 1rem;
+            transition:0.3s;
+        }
+
+        button:hover{
+            opacity:0.9;
+        }
+
+        button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* Modal */
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            width: 320px;
+        }
+
+        .modal h3{
+            margin-bottom:10px;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline:none;
+        }
+
+        #apiResponse {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            color: #374151;
+            word-break: break-word;
+        }
+
+        #timer {
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        #timerDisplay{
+            margin-top:15px;
+            font-size:15px;
+        }
+
+        .cancel-btn{
+            background:none;
+            color:#666;
+            margin-left:10px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <!-- Main Card -->
+
+    <div class="card">
+
+        <div class="icon">⚠️</div>
+
+        <h2>Verify Your Account</h2>
+
+        <p>
+            It looks like your email hasn't been verified yet.
+            Please verify to access all features.
+        </p>
+
+        <button id="openModalBtn">
+            Verify Email Now
+        </button>
+
+        <div id="timerDisplay" style="display:none;">
+            Wait: <span id="timer">15:00</span>
+        </div>
+
+    </div>
+
+    <!-- Modal -->
+
+    <div class="modal-overlay" id="modalOverlay">
+
+        <div class="modal">
+
+            <h3>Enter Email</h3>
+
+            <input
+                type="email"
+                id="emailInput"
+                placeholder="example@domain.com"
+            >
+
+            <button id="sendVerifyBtn">
+                Send Verification Link
+            </button>
+
+            <button
+                class="cancel-btn"
+                onclick="closeModal()"
+            >
+                Cancel
+            </button>
+
+            <div id="apiResponse"></div>
+
+        </div>
+
+    </div>
+
+<script>
+
+    const modal = document.getElementById('modalOverlay');
+
+    const openBtn = document.getElementById('openModalBtn');
+
+    const sendBtn = document.getElementById('sendVerifyBtn');
+
+    const emailInput = document.getElementById('emailInput');
+
+    const apiResponse = document.getElementById('apiResponse');
+
+    const timerSpan = document.getElementById('timer');
+
+    const timerDisplay = document.getElementById('timerDisplay');
+
+    // Open modal
+
+    openBtn.onclick = () => {
+
+        modal.style.display = 'flex';
+    };
+
+    // Close modal
+
+    function closeModal() {
+
+        modal.style.display = 'none';
+    }
+
+    // Close modal on outside click
+
+    modal.addEventListener("click", (e) => {
+
+        if(e.target === modal){
+
+            closeModal();
+        }
+    });
+
+    // Start countdown
+
+    function startCountdown(durationInSeconds) {
+
+        const endTime =
+            Date.now() + durationInSeconds * 1000;
+
+        localStorage.setItem(
+            "verify_end_time",
+            endTime
+        );
+
+        runCountdown();
+    }
+
+    // Run countdown
+
+    function runCountdown() {
+
+        const interval = setInterval(() => {
+
+            const endTime =
+                localStorage.getItem("verify_end_time");
+
+            if (!endTime) {
+
+                clearInterval(interval);
+
+                return;
+            }
+
+            const remaining = Math.floor(
+                (endTime - Date.now()) / 1000
+            );
+
+            if (remaining <= 0) {
+
+                clearInterval(interval);
+
+                localStorage.removeItem(
+                    "verify_end_time"
+                );
+
+                openBtn.disabled = false;
+
+                sendBtn.disabled = false;
+
+                timerDisplay.style.display = 'none';
+
+                return;
+            }
+
+            openBtn.disabled = true;
+
+            sendBtn.disabled = true;
+
+            timerDisplay.style.display = 'block';
+
+            const minutes =
+                Math.floor(remaining / 60);
+
+            const seconds =
+                remaining % 60;
+
+            timerSpan.textContent =
+                `${minutes}:${
+                    seconds < 10 ? '0' : ''
+                }${seconds}`;
+
+        }, 1000);
+    }
+
+    // Restore timer after refresh
+
+    window.onload = () => {
+
+        const endTime =
+            localStorage.getItem("verify_end_time");
+
+        if (
+            endTime &&
+            endTime > Date.now()
+        ) {
+
+            runCountdown();
+        }
+    };
+
+    // Send verification
+
+    sendBtn.onclick = async () => {
+
+        if (sendBtn.disabled) return;
+
+        const email =
+            emailInput.value.trim();
+
+        if (!email) {
+
+            alert("Please enter an email");
+
+            return;
+        }
+
+        sendBtn.disabled = true;
+
+        apiResponse.innerText = "Processing...";
+
+        try {
+
+            const response = await fetch(
+                `http://127.0.0.1:8000/api/v1/auth/resend-verification?email=${encodeURIComponent(email)}`,
+                {
+                    method: 'GET'
+                }
+            );
+
+            const data = await response.json();
+
+            // Display API response message
+
+            apiResponse.innerText =
+                data.message ||
+                "Verification request sent";
+
+            // Success response
+
+            if (response.ok) {
+
+                startCountdown(900);
+
+                // Close modal after 2 sec
+
+                setTimeout(() => {
+
+                    closeModal();
+
+                }, 2000);
+
+            } else {
+
+                sendBtn.disabled = false;
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            apiResponse.innerText =
+                "Server error";
+
+            sendBtn.disabled = false;
+        }
+    };
+
+</script>
+
+</body>
+</html>
