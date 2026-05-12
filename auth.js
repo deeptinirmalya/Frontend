@@ -1,4 +1,4 @@
-const API_BASE = "http://127.0.0.1:8000/api/v1"; // PRODUCTION URL
+const API_BASE = "http://localhost:8000/api/v1"; // PRODUCTION URL
 
 /**
  * Standard fetch wrapper to always include cookies and CSRF headers.
@@ -23,16 +23,16 @@ async function fetchSecure(endpoint, options = {}) {
  */
 async function init() {
     console.log("Init: Verifying secure session...");
-    
+
     // 1. Try to access a protected endpoint
     let response = await fetchSecure("/auth/me");
 
     // 2. If unauthorized (access token expired or missing), attempt a refresh
     if (response.status === 401) {
         console.log("Init: Access token expired. Attempting secure refresh...");
-        
+
         const refreshResponse = await fetchSecure("/auth/refresh", { method: "POST" });
-        
+
         if (refreshResponse.ok) {
             console.log("Init: Refresh successful! New tokens acquired.");
             // Retry the original request

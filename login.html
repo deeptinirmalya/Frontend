@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,7 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-
         :root {
             --bg-grad: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
             --glass-bg: rgba(255, 255, 255, 0.05);
@@ -208,11 +208,11 @@
             gap: 12px;
             color: white;
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transform: translateX(120%);
             opacity: 0;
             transition: 0.35s ease;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
 
         .toast.show {
@@ -270,7 +270,6 @@
             }
 
         }
-
     </style>
 </head>
 
@@ -292,8 +291,7 @@
 
         <div class="social-container">
 
-            <a href="http://localhost:8000/api/v1/auth/google/login?method=login"
-               class="social-btn btn-google">
+            <a href="http://127.0.0.1:8000/api/v1/auth/google/login?method=login" class="social-btn btn-google">
 
                 <img src="https://www.gstatic.com/images/branding/product/1x/googleg_48dp.png">
 
@@ -301,8 +299,7 @@
 
             </a>
 
-            <a href="http://localhost:8000/api/v1/auth/github/login?method=login"
-               class="social-btn btn-github">
+            <a href="http://127.0.0.1:8000/api/v1/auth/github/login?method=login" class="social-btn btn-github">
 
                 <i class="fab fa-github"></i>
 
@@ -320,23 +317,13 @@
 
             <div class="input-group">
 
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="Email Address"
-                    required
-                >
+                <input type="email" id="email" placeholder="Email Address" required>
 
             </div>
 
             <div class="input-group">
 
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Password"
-                    required
-                >
+                <input type="password" id="password" placeholder="Password" required>
 
             </div>
 
@@ -366,37 +353,37 @@
 
     </div>
 
-<script src="auth.js"></script>
+    <script src="auth.js"></script>
 
-<script>
+    <script>
 
-    // =========================
-    // TOAST FUNCTION
-    // =========================
+        // =========================
+        // TOAST FUNCTION
+        // =========================
 
-    function showToast(type, title, message) {
+        function showToast(type, title, message) {
 
-        const container = document.getElementById('toastContainer');
+            const container = document.getElementById('toastContainer');
 
-        const toast = document.createElement('div');
+            const toast = document.createElement('div');
 
-        toast.className = `toast ${type}`;
+            toast.className = `toast ${type}`;
 
-        let icon = 'fa-circle-info';
+            let icon = 'fa-circle-info';
 
-        if (type === 'error') {
-            icon = 'fa-circle-xmark';
-        }
+            if (type === 'error') {
+                icon = 'fa-circle-xmark';
+            }
 
-        if (type === 'success') {
-            icon = 'fa-circle-check';
-        }
+            if (type === 'success') {
+                icon = 'fa-circle-check';
+            }
 
-        if (type === 'warning') {
-            icon = 'fa-triangle-exclamation';
-        }
+            if (type === 'warning') {
+                icon = 'fa-triangle-exclamation';
+            }
 
-        toast.innerHTML = `
+            toast.innerHTML = `
             <i class="fa-solid ${icon}"></i>
 
             <div class="toast-content">
@@ -414,246 +401,278 @@
             <i class="fa-solid fa-xmark toast-close"></i>
         `;
 
-        container.appendChild(toast);
-
-        setTimeout(() => {
-            toast.classList.add('show');
-        }, 50);
-
-        const removeToast = () => {
-
-            toast.classList.remove('show');
+            container.appendChild(toast);
 
             setTimeout(() => {
-                toast.remove();
-            }, 300);
+                toast.classList.add('show');
+            }, 50);
 
-        };
+            const removeToast = () => {
 
-        toast.querySelector('.toast-close')
-            .addEventListener('click', removeToast);
+                toast.classList.remove('show');
 
-        setTimeout(removeToast, 5000);
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
 
-    }
+            };
 
-    // =========================
-    // URL PARAM HANDLER
-    // =========================
+            toast.querySelector('.toast-close')
+                .addEventListener('click', removeToast);
 
-    const params = new URLSearchParams(window.location.search);
-
-    const error = params.get('error');
-
-    if (error) {
-
-        switch(error) {
-
-            case 'INVALID_CREDENTIALS':
-
-                showToast(
-                    'error',
-                    'Login Failed',
-                    'Incorrect email or password.'
-                );
-
-                break;
-
-            case 'USER_NOT_FOUND':
-
-                showToast(
-                    'error',
-                    'User Not Found',
-                    'No account exists with this email.'
-                );
-
-                break;
-
-            case 'OAUTH_FAILED':
-
-                showToast(
-                    'error',
-                    'OAuth Failed',
-                    'Unable to authenticate with provider.'
-                );
-
-                break;
-
-            default:
-
-                showToast(
-                    'error',
-                    'Authentication Error',
-                    'Something went wrong during login.'
-                );
+            setTimeout(removeToast, 5000);
 
         }
 
-    }
+        // =========================
+        // URL PARAM HANDLER
+        // =========================
 
-    // =========================
-    // LOGIN FORM
-    // =========================
+        const params = new URLSearchParams(window.location.search);
 
-    document.getElementById('loginForm')
-        .addEventListener('submit', async (e) => {
+        const error = params.get('error');
 
-        e.preventDefault();
+        if (error) {
 
-        const email = document.getElementById('email').value.trim();
+            switch (error) {
 
-        const password = document.getElementById('password').value;
+                case 'INVALID_CREDENTIALS':
 
-        try {
+                    showToast(
+                        'error',
+                        'Login Failed',
+                        'Incorrect email or password.'
+                    );
 
-            const res = await fetch(
+                    break;
 
-                `${typeof API_BASE !== 'undefined'
-                    ? API_BASE
-                    : 'http://localhost:8000/api/v1'
-                }/auth/login`,
+                case 'user_not_found':
 
-                {
-                    method: 'POST',
+                    showToast(
+                        'error',
+                        'User Not Found',
+                        'No account exists with this email.'
+                    );
 
-                    credentials: 'include',
+                    break;
 
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
+                case 'OAUTH_FAILED':
 
-                    body: JSON.stringify({
-                        identifier: email,
-                        password: password
-                    })
+                    showToast(
+                        'error',
+                        'OAuth Failed',
+                        'Unable to authenticate with provider.'
+                    );
+
+                    break;
+
+                default:
+
+                    showToast(
+                        'error',
+                        'Authentication Error',
+                        'Something went wrong during login.'
+                    );
+
+            }
+
+        }
+
+        // =========================
+        // LOGIN FORM
+        // =========================
+
+        document.getElementById('loginForm')
+            .addEventListener('submit', async (e) => {
+
+                e.preventDefault();
+
+                const email = document.getElementById('email').value.trim();
+
+                const password = document.getElementById('password').value;
+
+                try {
+
+                    const res = await fetch(
+
+                        `${typeof API_BASE !== 'undefined'
+                            ? API_BASE
+                            : 'http://localhost:8000/api/v1'
+                        }/auth/login`,
+
+                        {
+                            method: 'POST',
+
+                            credentials: 'include',
+
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+
+                            body: JSON.stringify({
+                                identifier: email,
+                                password: password
+                            })
+
+                        }
+
+                    );
+
+                    // SAFE JSON PARSE
+
+                    let data = {};
+
+                    try {
+
+                        data = await res.json();
+
+                    }
+                    catch {
+
+                        data = {};
+
+                    }
+
+                    console.log(data);
+
+                    // =========================
+                    // SUCCESS
+                    // =========================
+
+                    if (res.ok && data.success) {
+
+                        const role = data.data?.role;
+
+                        showToast(
+                            'success',
+                            'Login Successful',
+                            'Redirecting...'
+                        );
+
+                        setTimeout(() => {
+
+                            // CONTRIBUTOR
+
+                            if (
+                                role === 'contributor' ||
+                                role === 'CONTRIBUTOR'
+                            ) {
+
+                                window.location.href =
+                                    'contributor_profile.html';
+
+                                return;
+                            }
+
+                            // ORGANIZATION
+
+                            if (
+                                role === 'organization' ||
+                                role === 'ORGANIZATION'
+                            ) {
+
+                                window.location.href =
+                                    'organization_profile.html';
+
+                                return;
+                            }
+
+                            // FALLBACK
+
+                            window.location.href =
+                                'action_failed.html';
+
+                        }, 1000);
+
+                        return;
+
+                    }
+
+                    // =========================
+                    // ACCOUNT NOT VERIFIED
+                    // =========================
+
+                    if (data.error === 'ACCOUNT_NOT_VERIFIED') {
+
+                        window.location.href = 'account_not_verify.html';
+
+                        return;
+
+                    }
+
+                    // =========================
+                    // ACCOUNT BLOCKED
+                    // =========================
+
+                    if (data.error === 'ACCOUNT_BLOCKED') {
+
+                        window.location.href = 'account_blocked.html';
+
+                        return;
+
+                    }
+
+                    // =========================
+                    // INVALID CREDENTIALS
+                    // =========================
+
+                    if (data.error === 'INVALID_CREDENTIALS') {
+
+                        showToast(
+                            'error',
+                            'Login Failed',
+                            'Incorrect email or password.'
+                        );
+
+                        return;
+
+                    }
+
+                    // =========================
+                    // USER NOT FOUND
+                    // =========================
+
+                    if (data.error === 'USER_NOT_FOUND') {
+
+                        showToast(
+                            'error',
+                            'User Not Found',
+                            'No account exists with this email.'
+                        );
+
+                        return;
+
+                    }
+
+                    // =========================
+                    // FALLBACK ERROR
+                    // =========================
+
+                    showToast(
+                        'error',
+                        'Login Failed',
+                        'Unable to sign in right now.'
+                    );
 
                 }
 
-            );
+                catch (err) {
 
-            // SAFE JSON PARSE
+                    console.error(err);
 
-            let data = {};
+                    showToast(
+                        'error',
+                        'Network Error',
+                        'Backend server is not responding.'
+                    );
 
-            try {
+                }
 
-                data = await res.json();
+            });
 
-            }
-            catch {
-
-                data = {};
-
-            }
-
-            console.log(data);
-
-            // =========================
-            // SUCCESS
-            // =========================
-
-            if (res.ok && data.success) {
-
-                showToast(
-                    'success',
-                    'Login Successful',
-                    'Redirecting to profile...'
-                );
-
-                setTimeout(() => {
-
-                    window.location.href = 'profile.html';
-
-                }, 1000);
-
-                return;
-
-            }
-
-            // =========================
-            // ACCOUNT NOT VERIFIED
-            // =========================
-
-            if (data.error === 'ACCOUNT_NOT_VERIFIED') {
-
-                window.location.href = 'account_not_verify.html';
-
-                return;
-
-            }
-
-            // =========================
-            // ACCOUNT BLOCKED
-            // =========================
-
-            if (data.error === 'ACCOUNT_BLOCKED') {
-
-                window.location.href = 'account_blocked.html';
-
-                return;
-
-            }
-
-            // =========================
-            // INVALID CREDENTIALS
-            // =========================
-
-            if (data.error === 'INVALID_CREDENTIALS') {
-
-                showToast(
-                    'error',
-                    'Login Failed',
-                    'Incorrect email or password.'
-                );
-
-                return;
-
-            }
-
-            // =========================
-            // USER NOT FOUND
-            // =========================
-
-            if (data.error === 'USER_NOT_FOUND') {
-
-                showToast(
-                    'error',
-                    'User Not Found',
-                    'No account exists with this email.'
-                );
-
-                return;
-
-            }
-
-            // =========================
-            // FALLBACK ERROR
-            // =========================
-
-            showToast(
-                'error',
-                'Login Failed',
-                'Unable to sign in right now.'
-            );
-
-        }
-
-        catch (err) {
-
-            console.error(err);
-
-            showToast(
-                'error',
-                'Network Error',
-                'Backend server is not responding.'
-            );
-
-        }
-
-    });
-
-</script>
+    </script>
 
 </body>
+
 </html>
