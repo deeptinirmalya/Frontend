@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Skill Search</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: start;
+            padding-top: 80px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #dcdfe4;
+            border-radius: 12px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s ease;
+        }
+
+        .search-box:focus {
+            border-color: #4f46e5;
+        }
+
+        .dropdown {
+            width: 100%;
+            background: white;
+            margin-top: 8px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+            display: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .dropdown-item {
+            padding: 14px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f1f1;
+            transition: 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background: #f5f7ff;
+        }
+
+        .loading,
+        .empty {
+            padding: 14px 16px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <input
+            type="text"
+            id="searchInput"
+            class="search-box"
+            placeholder="Search skills..."
+            autocomplete="off"
+        >
+
+        <div id="dropdown" class="dropdown"></div>
+
+    </div>
+
+    <!-- Load Auth First -->
+    <script src="auth.js"></script>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+
+            const sessionData = await init();
+
+            if (!sessionData || !sessionData.success) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            const searchInput = document.getElementById('searchInput');
+            const dropdown = document.getElementById('dropdown');
+
+            let debounceTimer;
+
+            searchInput.addEventListener('input', () => {
+
+                clearTimeout(debounceTimer);
+
+                const value = searchInput.value.trim();
+
+                if (!value) {
+                    dropdown.style.display = "none";
+                    dropdown.innerHTML = "";
+                    return;
+                }
+
+                debounceTimer = setTimeout(async () => {
+
+                    dropdown.style.display = "block";
+                    dropdown.innerHTML =
+                        `<div class="loading">Searching...</div>`;
+
+                    try {
+
+                        const response = await fetchSecure(
+                            `/contributor/get-skills?value=${encodeURIComponent(value)}`,
+                            {
+                                method: "POST"
+                            }
+                        );
+
+                        const result = await response.json();
+
+                        if (!response.ok || !result.success) {
+
+                            dropdown.innerHTML =
+                                `<div class="empty">No skills found</div>`;
+
+                            return;
+                        }
+
+                        const skills = result.data;
+
+                        if (!skills.length) {
+
+                            dropdown.innerHTML =
+                                `<div class="empty">No skills found</div>`;
+
+                            return;
+                        }
+
+                        dropdown.innerHTML = "";
+
+                        skills.forEach(skill => {
+
+                            const item = document.createElement('div');
+
+                            item.className = "dropdown-item";
+
+                            item.innerText = skill.skill_name;
+
+                            item.addEventListener('click', () => {
+
+                                searchInput.value = skill.skill_name;
+
+                                dropdown.style.display = "none";
+                            });
+
+                            dropdown.appendChild(item);
+                        });
+
+                    } catch (error) {
+
+                        console.error(error);
+
+                        dropdown.innerHTML =
+                            `<div class="empty">Something went wrong</div>`;
+                    }
+
+                }, 300);
+
+            });
+
+            // Hide dropdown when clicked outside
+            document.addEventListener('click', (e) => {
+
+                if (!e.target.closest('.container')) {
+                    dropdown.style.display = "none";
+                }
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>
